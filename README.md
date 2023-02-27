@@ -7,12 +7,24 @@ npm install js-arc-client
 ```
 
 ## Usage
-```typescript
+
+```javascript
 import { ArcClient } from 'js-arc-client';
 
-const arcClient = new ArcClient({
-  host: 'localhost',
-  port: 8080,
+const arcClient = new ArcClient('https://api.taal.com/arc', {
+  apiKey: '<api-key>'
+});
+
+const txid = 'd4b0e1b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0';
+const result = await arcClient.getTransactionStatus(txid);
+```
+
+or as commonjs module:
+
+```javascript
+const { ArcClient } = require('js-arc-client').ArcClient;
+
+const arcClient = new ArcClient('https://api.taal.com/arc', {
   apiKey: '<api-key>'
 });
 
