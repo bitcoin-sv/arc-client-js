@@ -17,21 +17,22 @@
     "arc",
     "bitcoin"
   ],
-  "main": "dist/cjs/typescript-npm-package.js",
-  "module": "dist/esm/typescript-npm-package.js",
-  "browser": "dist/browser/typescript-npm-package.js",
+  "main": "dist/typescript-npm-package.cjs",
+  "module": "dist/typescript-npm-package.esm.js",
+  "browser": "dist/typescript-npm-package.umd.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rollup -c",
+    "build": "rimraf ./dist && rollup -c",
     "prebuild:types": "rimraf ./build",
     "build:types": "tsc -p ./tsconfig.json --outDir build --declaration true && api-extractor run",
     "predocs": "rimraf ./docs",
     "docs": "typedoc src --out docs",
     "clean": "rimraf ./build ./dist ./docs",
+    "pub": "yarn build && yarn publish",
     "test": "jest"
   },
   "dependencies": {
