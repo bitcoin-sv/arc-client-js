@@ -1,9 +1,10 @@
 import {describe, expect, test} from '@jest/globals'
 import fetchMock, {MockResponseInitFunction} from "jest-fetch-mock"
+jest.setMock("cross-fetch", fetchMock);
 
 import {ArcClient} from "../src";
 import {ClientOptions, TransactionStatus, TxStatus} from "../src/interface";
-import {testFees, testUrl, tx1, tx1Raw, tx1RawBytes, tx2Raw, tx2RawBytes} from "./data";
+import {testPolicy, testUrl, tx1, tx1Raw, tx1RawBytes, tx2Raw, tx2RawBytes} from "./data";
 
 const transactionStatus: TransactionStatus = {
   txid: tx1,
@@ -44,19 +45,19 @@ describe('ArcClient class', () => {
     const arcClient = new ArcClient(testUrl);
     expect(arcClient).toBeInstanceOf(ArcClient);
     expect(arcClient.client.debug).toBe(undefined);
-    arcClient.SetDebug(true);
+    arcClient.setDebug(true);
     expect(arcClient.client.debug).toBe(true);
   });
 });
 
-describe('GetFees', () => {
-  const HttpUrl = `/fees`;
-  test('get fees', async () => {
-    fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+describe('GetPolicy', () => {
+  const HttpUrl = `/policy`;
+  test('get policy', async () => {
+    fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    const fees = await arcClient.GetFees();
-    expect(fees).toEqual(testFees);
+    const policy = await arcClient.getPolicy();
+    expect(policy).toEqual(testPolicy);
   });
 });
 
@@ -66,7 +67,7 @@ describe('GetTransactionStatus', () => {
   test('txId is required', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.GetTransactionStatus(""))
+    await expect(arcClient.getTransactionStatus(""))
       .rejects
       .toThrow('txId is required');
   });
@@ -74,7 +75,7 @@ describe('GetTransactionStatus', () => {
   test('txId must be a valid hex string', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.GetTransactionStatus("this should fail"))
+    await expect(arcClient.getTransactionStatus("this should fail"))
       .rejects
       .toThrow('txId must be a valid hex string');
   });
@@ -82,7 +83,7 @@ describe('GetTransactionStatus', () => {
   test('txId must be 64 characters long', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.GetTransactionStatus("0123456789abcdef"))
+    await expect(arcClient.getTransactionStatus("0123456789abcdef"))
       .rejects
       .toThrow('txId must be 64 characters long');
   });
@@ -91,7 +92,7 @@ describe('GetTransactionStatus', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(transactionStatus), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    const result = await arcClient.GetTransactionStatus(tx1);
+    const result = await arcClient.getTransactionStatus(tx1);
     expect(result).toEqual(transactionStatus);
 
     const call = resp.mock.calls[0];
@@ -111,7 +112,7 @@ describe('PostTransaction', () => {
   test('tx is required', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.PostTransaction(""))
+    await expect(arcClient.postTransaction(""))
       .rejects
       .toThrow('tx is required');
   });
@@ -119,7 +120,7 @@ describe('PostTransaction', () => {
   test('tx is not hex', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.PostTransaction("invalid hex string"))
+    await expect(arcClient.postTransaction("invalid hex string"))
       .rejects
       .toThrow('tx must be a valid hex string');
   });
@@ -128,7 +129,7 @@ describe('PostTransaction', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(transactionStatus), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    const result = await arcClient.PostTransaction(tx1Raw);
+    const result = await arcClient.postTransaction(tx1Raw);
     expect(result).toEqual(transactionStatus);
 
     const call = resp.mock.calls[0];
@@ -145,7 +146,7 @@ describe('PostTransaction', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(transactionStatus), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    const result = await arcClient.PostTransaction(tx1RawBytes);
+    const result = await arcClient.postTransaction(tx1RawBytes);
     expect(result).toEqual(transactionStatus);
 
     const call = resp.mock.calls[0];
@@ -168,7 +169,7 @@ describe('PostTransactions', () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
     // @ts-ignore
-    await expect(arcClient.PostTransactions(null))
+    await expect(arcClient.postTransactions(null))
       .rejects
       .toThrow('txs cannot be empty');
   });
@@ -176,7 +177,7 @@ describe('PostTransactions', () => {
   test('txs cannot be empty', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.PostTransactions(Buffer.from([])))
+    await expect(arcClient.postTransactions(Buffer.from([])))
       .rejects
       .toThrow('txs must contain at least one transaction');
   });
@@ -184,7 +185,7 @@ describe('PostTransactions', () => {
   test('txs is required', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.PostTransactions([]))
+    await expect(arcClient.postTransactions([]))
       .rejects
       .toThrow('txs must contain at least one transaction');
   });
@@ -193,7 +194,7 @@ describe('PostTransactions', () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
     // @ts-ignore
-    await expect(arcClient.PostTransactions("test"))
+    await expect(arcClient.postTransactions("test"))
       .rejects
       .toThrow('txs must be an array of hex strings or a Buffer');
   });
@@ -201,7 +202,7 @@ describe('PostTransactions', () => {
   test('txs are not all in hex', async () => {
     const arcClient = new ArcClient(testUrl);
     // expect to throw an error
-    await expect(arcClient.PostTransactions(["invalid hex string"]))
+    await expect(arcClient.postTransactions(["invalid hex string"]))
       .rejects
       .toThrow('tx must be a valid hex string');
   });
@@ -210,7 +211,7 @@ describe('PostTransactions', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(transactionStatus), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    const result = await arcClient.PostTransactions([tx1Raw, tx2Raw]);
+    const result = await arcClient.postTransactions([tx1Raw, tx2Raw]);
     expect(result).toEqual(transactionStatus);
 
     const call = resp.mock.calls[0];
@@ -228,7 +229,7 @@ describe('PostTransactions', () => {
 
     const arcClient = new ArcClient(testUrl);
     const txBuffer = Buffer.from([...tx1RawBytes, ...tx2RawBytes])
-    const result = await arcClient.PostTransactions(txBuffer);
+    const result = await arcClient.postTransactions(txBuffer);
     expect(result).toEqual(transactionStatus);
 
     const call = resp.mock.calls[0];
@@ -244,14 +245,14 @@ describe('PostTransactions', () => {
 });
 
 describe('authorization', () => {
-  const HttpUrl = `/fees`;
+  const HttpUrl = `/policy`;
 
   test('api key 1', async () => {
-    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    arcClient.SetApiKey("testApiKey");
-    await arcClient.GetFees();
+    arcClient.setApiKey("testApiKey");
+    await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
@@ -262,12 +263,12 @@ describe('authorization', () => {
   });
 
   test('api key 2', async () => {
-    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl, {
       apiKey: "testApiKey2",
     });
-    await arcClient.GetFees();
+    await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
@@ -278,11 +279,11 @@ describe('authorization', () => {
   });
 
   test('bearer 1', async () => {
-    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    arcClient.SetBearer("testBearer");
-    await arcClient.GetFees();
+    arcClient.setBearer("testBearer");
+    await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
@@ -293,12 +294,12 @@ describe('authorization', () => {
   });
 
   test('bearer 2', async () => {
-    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl, {
       bearer: "testBearer2",
     });
-    await arcClient.GetFees();
+    await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
@@ -309,11 +310,11 @@ describe('authorization', () => {
   });
 
   test('authorization 1', async () => {
-    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    arcClient.SetAuthorization("SomeCustom authorization");
-    await arcClient.GetFees();
+    arcClient.setAuthorization("SomeCustom authorization");
+    await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
@@ -324,12 +325,12 @@ describe('authorization', () => {
   });
 
   test('authorization 2', async () => {
-    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testFees), HttpUrl));
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl, {
       authorization: "SomeCustom authorization2",
     });
-    await arcClient.GetFees();
+    await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({

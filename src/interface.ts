@@ -60,8 +60,8 @@ export interface Fee {
   relayFee: FeeAmount;
 }
 
-export interface Fees {
-  fees?: Fee[];
+export interface Policy {
+  policy: any;
   timestamp: string;
 }
 

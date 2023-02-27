@@ -1,4 +1,7 @@
-import {Client, ClientOptions, Fees, HTTPOptions, TransactionError, TransactionStatus} from "./interface";
+import fetch from "cross-fetch";
+import {Client, ClientOptions, Policy, HTTPOptions, TransactionError, TransactionStatus} from "./interface";
+
+global.fetch = fetch;
 
 export class ArcClient {
   client: Client;
@@ -16,7 +19,7 @@ export class ArcClient {
       this.version = options.version;
     }
 
-    this.client.serverUrl = serverUrl;
+    this.client.serverUrl = serverUrl.replace(/\/$/, "");
   }
 
   /**
@@ -26,7 +29,7 @@ export class ArcClient {
    *
    * @param apiKey: string API key to use for authentication
    */
-  SetApiKey(apiKey: string) {
+  setApiKey(apiKey: string) {
     this.client.apiKey = apiKey;
   }
 
@@ -37,7 +40,7 @@ export class ArcClient {
    *
    * @param bearer: string Bearer token to use for authentication
    */
-  SetBearer(bearer: string) {
+  setBearer(bearer: string) {
     this.client.bearer = bearer;
   }
 
@@ -48,24 +51,24 @@ export class ArcClient {
    *
    * @param authorization: string Raw authorization header to use for authentication
    */
-  SetAuthorization(authorization: string) {
+  setAuthorization(authorization: string) {
     this.client.authorization = authorization;
   }
 
   /**
    * Set the debug flag
    */
-  SetDebug(debug: boolean) {
+  setDebug(debug: boolean) {
     this.client.debug = debug;
   }
 
   /**
    * Get the fee policy of the arc server
    *
-   * @returns {Promise<Fees>}
+   * @returns {Promise<Policy>}
    */
-  async GetFees(): Promise<Fees> {
-    return await this.doHTTPRequest(`${this.client.serverUrl}/${this.version}/fees`, {
+  async getPolicy(): Promise<Policy> {
+    return await this.doHTTPRequest(`${this.client.serverUrl}/${this.version}/policy`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +82,7 @@ export class ArcClient {
    * @param txId string Transaction ID
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
-  async GetTransactionStatus(txId: string): Promise<TransactionStatus | TransactionError> {
+  async getTransactionStatus(txId: string): Promise<TransactionStatus | TransactionError> {
     if (!txId) {
       throw new Error("txId is required");
     }
@@ -108,7 +111,7 @@ export class ArcClient {
    * @param tx string | Buffer Transaction to post
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
-  async PostTransaction(tx: string | Buffer): Promise<TransactionStatus | TransactionError> {
+  async postTransaction(tx: string | Buffer): Promise<TransactionStatus | TransactionError> {
     if (!tx) {
       throw new Error("tx is required");
     }
@@ -141,7 +144,7 @@ export class ArcClient {
    * @param txs string[] | Buffer Transactions to post
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
-  async PostTransactions(txs: string[] | Buffer): Promise<TransactionStatus> {
+  async postTransactions(txs: string[] | Buffer): Promise<TransactionStatus> {
     if (!txs) {
       throw new Error("txs cannot be empty");
     }
@@ -182,9 +185,6 @@ export class ArcClient {
   async doHTTPRequest(url: string, options: HTTPOptions) {
     let headers = {...options.headers};
     headers['Accept'] = 'application/json';
-
-    // Remove double slashes from the URL
-    url = url.replace(/([^:])(\/\/+)/g, '$1/');
 
     if (this.client.apiKey) {
       headers["X-API-KEY"] = this.client.apiKey;

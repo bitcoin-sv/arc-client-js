@@ -1,4 +1,4 @@
-import {FeeFeeType, Fees} from "../src/interface";
+import {FeeFeeType, Policy} from "../src/interface";
 
 export const testUrl = "https://arc.bitcoinassociation.net/";
 
@@ -16,30 +16,12 @@ export const tx3Bytes    = Buffer.from(tx3, 'hex').reverse()
 export const tx4         = "88eab41a8d0b7b4bc395f8f988ea3d6e63c8bc339526fd2f00cb7ce6fd7df0f7"
 export const tx4Bytes    = Buffer.from(tx4, 'hex').reverse()
 
-export const testFees: Fees = {
-  fees: [
-    {
-      "feeType": FeeFeeType.FeeTypeStandard,
-      "miningFee": {
-        "bytes": 50,
-        "satoshis": 1000
-      },
-      "relayFee": {
-        "bytes": 0,
-        "satoshis": 1000
-      }
-    },
-    {
-      "feeType": FeeFeeType.FeeTypeData,
-      "miningFee": {
-        "bytes": 50,
-        "satoshis": 1000
-      },
-      "relayFee": {
-        "bytes": 0,
-        "satoshis": 1000
-      }
-    },
-  ],
+export const testPolicy: Policy = {
+  policy: {
+    maxscriptsizepolicy: 500000,
+    maxtxsigopscountspolicy: 4294967295,
+    maxtxsizepolicy: 10000000,
+    miningFee: { bytes: 1000, satoshis: 50 }
+  },
   timestamp: "2021-03-31T12:00:00Z"
 };
