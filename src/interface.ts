@@ -30,6 +30,7 @@ export interface TransactionStatus {
   blockHash?: string;
   blockHeight?: number;
   timestamp: string;
+  status: number;
   txStatus?: TxStatus;
   txid: string;
 }
