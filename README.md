@@ -12,7 +12,7 @@ npm install js-arc-client
 import { ArcClient } from 'js-arc-client';
 
 const arcClient = new ArcClient('https://api.taal.com/arc', {
-  apiKey: '<api-key>'
+  authorization: '<api-key>'
 });
 
 const txid = 'd4b0e1b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0';
@@ -25,7 +25,7 @@ or as commonjs module:
 const { ArcClient } = require('js-arc-client').ArcClient;
 
 const arcClient = new ArcClient('https://api.taal.com/arc', {
-  apiKey: '<api-key>'
+  authorization: '<api-key>'
 });
 
 const txid = 'd4b0e1b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0c0b0';
