@@ -251,14 +251,14 @@ describe('authorization', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    arcClient.setApiKey("testApiKey");
+    arcClient.setAuthorization("testApiKey");
     await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
       "Accept": "application/json",
       "Content-Type": "application/json",
-      "X-API-KEY": "testApiKey",
+      "Authorization": "testApiKey",
     });
   });
 
@@ -266,7 +266,7 @@ describe('authorization', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl, {
-      apiKey: "testApiKey2",
+      authorization: "testApiKey2",
     });
     await arcClient.getPolicy();
 
@@ -274,7 +274,7 @@ describe('authorization', () => {
     expect(call[1]?.headers).toEqual({
       "Accept": "application/json",
       "Content-Type": "application/json",
-      "X-API-KEY": "testApiKey2",
+      "Authorization": "testApiKey2",
     });
   });
 
@@ -282,14 +282,14 @@ describe('authorization', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl);
-    arcClient.setBearer("testBearer");
+    arcClient.setAuthorization("testBearer");
     await arcClient.getPolicy();
 
     const call = resp.mock.calls[0];
     expect(call[1]?.headers).toEqual({
       "Accept": "application/json",
       "Content-Type": "application/json",
-      "Authorization": "Bearer testBearer",
+      "Authorization": "testBearer",
     });
   });
 
@@ -297,7 +297,7 @@ describe('authorization', () => {
     const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(testPolicy), HttpUrl));
 
     const arcClient = new ArcClient(testUrl, {
-      bearer: "testBearer2",
+      authorization: "testBearer2",
     });
     await arcClient.getPolicy();
 
@@ -305,7 +305,7 @@ describe('authorization', () => {
     expect(call[1]?.headers).toEqual({
       "Accept": "application/json",
       "Content-Type": "application/json",
-      "Authorization": "Bearer testBearer2",
+      "Authorization": "testBearer2",
     });
   });
 

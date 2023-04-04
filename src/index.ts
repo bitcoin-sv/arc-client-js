@@ -23,36 +23,14 @@ export class ArcClient {
   }
 
   /**
-   * Set the API key
-   * Header:
-   * - X-API-KEY: <apiKey>
-   *
-   * @param apiKey: string API key to use for authentication
-   */
-  setApiKey(apiKey: string) {
-    this.client.apiKey = apiKey;
-  }
-
-  /**
    * Set the Bearer token
    * Header:
    * - Authorization: Bearer <bearer>
    *
    * @param bearer: string Bearer token to use for authentication
    */
-  setBearer(bearer: string) {
-    this.client.bearer = bearer;
-  }
-
-  /**
-   * Set the Authorization header
-   * Header:
-   * - Authorization: <authorization>
-   *
-   * @param authorization: string Raw authorization header to use for authentication
-   */
-  setAuthorization(authorization: string) {
-    this.client.authorization = authorization;
+  setAuthorization(auth: string) {
+    this.client.authorization = auth;
   }
 
   /**
@@ -185,14 +163,6 @@ export class ArcClient {
   async doHTTPRequest(url: string, options: HTTPOptions) {
     let headers = {...options.headers};
     headers['Accept'] = 'application/json';
-
-    if (this.client.apiKey) {
-      headers["X-API-KEY"] = this.client.apiKey;
-    }
-
-    if (this.client.bearer) {
-      headers["Authorization"] = `Bearer ${this.client.bearer}`;
-    }
 
     if (this.client.authorization) {
       headers["Authorization"] = this.client.authorization;

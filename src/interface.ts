@@ -1,14 +1,10 @@
 export interface Client {
   serverUrl: string;
-  apiKey?: string;
-  bearer?: string;
   authorization?: string;
   debug?: boolean;
 }
 
 export interface ClientOptions {
-  apiKey?: string;
-  bearer?: string;
   authorization?: string;
   version?: string;
   debug?: boolean;
@@ -71,7 +67,6 @@ export interface HTTPOptions {
   headers?: {
     "Accept"?: string;
     "Content-Type"?: string;
-    "X-API-KEY"?: string;
     Authorization?: string;
   };
 }
