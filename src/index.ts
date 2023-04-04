@@ -143,7 +143,7 @@ export class ArcClient {
       }
 
       txs.forEach((tx) => {
-        if (!/^[0-9A-Fa-f]+$/.test(tx)) {
+        if (!/^[0-9A-Fa-f]+$/.test(tx["rawTx"])) {
           throw new Error("tx must be a valid hex string");
         }
       });
