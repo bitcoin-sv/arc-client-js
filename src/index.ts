@@ -3,6 +3,20 @@ import {Client, ClientOptions, Policy, HTTPOptions, TransactionError, Transactio
 
 global.fetch = fetch;
 
+type jsonTxs = jsonTx[]
+
+interface jsonTx {
+  rawTx: string
+}
+
+function isJsonTx(o: string | jsonTx): o is jsonTx {
+  if (typeof o === "string") {
+    return false
+  }
+
+  return "rawTx" in o
+}
+
 export class ArcClient {
   client: Client;
   version: string = "v1";
@@ -115,14 +129,16 @@ export class ArcClient {
   /**
    * Post transactions in a batch to the ARC server
    *
-   * This functions accepts the transactions either as an array of hex strings or a Buffer
+   * This functions accepts the transactions either as an array of hex strings, a json array of format [{"rawTx": "<hex string"}] or a Buffer
    * If the transactions are in a Buffer, they will be sent to the ARC server as a
    * binary (application/octet-stream) request, which will be processed as a stream on the ARC server
    *
    * @param txs string[] | Buffer Transactions to post
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
-  async postTransactions(txs: string[] | Buffer): Promise<TransactionStatus> {
+  async postTransactions(
+    txs: string[] | Buffer | jsonTxs
+  ): Promise<TransactionStatus> {
     if (!txs) {
       throw new Error("txs cannot be empty");
     }
@@ -131,7 +147,7 @@ export class ArcClient {
       throw new Error("txs must contain at least one transaction");
     }
 
-    let contentType = "application/json";
+    let contentType;
     let body;
 
     if (txs instanceof Buffer) {
@@ -142,11 +158,24 @@ export class ArcClient {
         throw new Error("txs must be an array of hex strings or a Buffer");
       }
 
+      let isValidStringArray = true
+      let isValidJsontTxs = true
       txs.forEach((tx) => {
-        if (!/^[0-9A-Fa-f]+$/.test(tx["rawTx"])) {
-          throw new Error("tx must be a valid hex string");
+        if (typeof tx !== "string" || !/^[0-9A-Fa-f]+$/.test(tx)) {
+          isValidStringArray = false
         }
-      });
+        if (!isJsonTx(tx) || !/^[0-9A-Fa-f]+$/.test(tx["rawTx"])){
+          isValidJsontTxs = false
+        }
+      })
+      
+      if (isValidJsontTxs) {
+        contentType = "application/json";
+      } else if (isValidStringArray) {
+        contentType = "text/plain"
+      } else {
+        throw new Error("tx must be a valid hex string")
+      }
 
       body = JSON.stringify(txs);
     }
