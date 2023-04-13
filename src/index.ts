@@ -133,7 +133,7 @@ export class ArcClient {
    * If the transactions are in a Buffer, they will be sent to the ARC server as a
    * binary (application/octet-stream) request, which will be processed as a stream on the ARC server
    *
-   * @param txs string[] | Buffer Transactions to post
+   * @param txs string[] | Buffer | json array of format [{"rawTx": "<hex string"}] Transactions to post 
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
   async postTransactions(
@@ -171,13 +171,13 @@ export class ArcClient {
       
       if (isValidJsontTxs) {
         contentType = "application/json";
+        body = JSON.stringify(txs);
       } else if (isValidStringArray) {
         contentType = "text/plain"
+        body = txs.join("\n");
       } else {
         throw new Error("tx must be a valid hex string")
       }
-
-      body = JSON.stringify(txs);
     }
 
     return await this.doHTTPRequest(`${this.client.serverUrl}/${this.version}/txs`, {
