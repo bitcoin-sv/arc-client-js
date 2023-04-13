@@ -196,7 +196,7 @@ describe('PostTransactions', () => {
     // @ts-ignore
     await expect(arcClient.postTransactions("test"))
       .rejects
-      .toThrow('txs must be an array of hex strings or a Buffer');
+      .toThrow('txs must be an array of hex strings, a json array of format [{\"rawTx\": \"<hex string\"}] or a Buffer');
   });
 
   test('success json', async () => {
@@ -215,6 +215,14 @@ describe('PostTransactions', () => {
       "Accept": "application/json",
       "Content-Type": "application/json",
     });
+  });
+
+  test('json txs are not all in hex', async () => {
+    const arcClient = new ArcClient(testUrl);
+    // expect to throw an error
+    await expect(arcClient.postTransactions([{"rawTx": "invalid hex string"}, {"rawTx": tx2Raw}]))
+      .rejects
+      .toThrow('tx must be a valid hex string');
   });
 
   test('txs are not all in hex', async () => {

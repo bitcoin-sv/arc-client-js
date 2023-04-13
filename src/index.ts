@@ -155,7 +155,7 @@ export class ArcClient {
       body = txs;
     } else {
       if (!Array.isArray(txs)) {
-        throw new Error("txs must be an array of hex strings or a Buffer");
+        throw new Error("txs must be an array of hex strings, a json array of format [{\"rawTx\": \"<hex string\"}] or a Buffer");
       }
 
       let isValidStringArray = true
