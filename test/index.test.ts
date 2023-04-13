@@ -196,7 +196,33 @@ describe('PostTransactions', () => {
     // @ts-ignore
     await expect(arcClient.postTransactions("test"))
       .rejects
-      .toThrow('txs must be an array of hex strings or a Buffer');
+      .toThrow('txs must be an array of hex strings, a json array of format [{\"rawTx\": \"<hex string\"}] or a Buffer');
+  });
+
+  test('success json', async () => {
+    const resp = fetchMock.mockIf(/^.*$/, mockResponse(200, JSON.stringify(transactionStatus), HttpUrl));
+
+    const arcClient = new ArcClient(testUrl);
+
+    const result = await arcClient.postTransactions([{"rawTx": tx1Raw}, {"rawTx": tx2Raw}]);
+    expect(result).toEqual(transactionStatus);
+
+    const call = resp.mock.calls[0];
+    expect(call[0]).toBe(`${testUrl}v1${HttpUrl}`);
+    expect(call[1]?.method).toBe("POST");
+    expect(call[1]?.body).toBe(JSON.stringify([{"rawTx": tx1Raw}, {"rawTx": tx2Raw}]));
+    expect(call[1]?.headers).toEqual({
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    });
+  });
+
+  test('json txs are not all in hex', async () => {
+    const arcClient = new ArcClient(testUrl);
+    // expect to throw an error
+    await expect(arcClient.postTransactions([{"rawTx": "invalid hex string"}, {"rawTx": tx2Raw}]))
+      .rejects
+      .toThrow('tx must be a valid hex string');
   });
 
   test('txs are not all in hex', async () => {
@@ -220,7 +246,7 @@ describe('PostTransactions', () => {
     expect(call[1]?.body).toBe(JSON.stringify([tx1Raw, tx2Raw]));
     expect(call[1]?.headers).toEqual({
       "Accept": "application/json",
-      "Content-Type": "application/json",
+      "Content-Type": "text/plain",
     });
   });
 
