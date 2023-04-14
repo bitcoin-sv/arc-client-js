@@ -3,7 +3,6 @@ import {Client, ClientOptions, Policy, HTTPOptions, TransactionError, Transactio
 
 global.fetch = fetch;
 
-
 export class ArcClient {
   client: Client;
   version: string = "v1";
@@ -120,12 +119,10 @@ export class ArcClient {
    * If the transactions are in a Buffer, they will be sent to the ARC server as a
    * binary (application/octet-stream) request, which will be processed as a stream on the ARC server
    *
-   * @param txs string[] | Buffer Transactions to post 
+   * @param txs string[] | Buffer Transactions to post
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
-  async postTransactions(
-    txs: string[] | Buffer
-  ): Promise<TransactionStatus> {
+  async postTransactions(txs: string[] | Buffer): Promise<TransactionStatus> {
     if (!txs) {
       throw new Error("txs cannot be empty");
     }
@@ -134,7 +131,7 @@ export class ArcClient {
       throw new Error("txs must contain at least one transaction");
     }
 
-    let contentType;
+    let contentType = "application/json";
     let body;
 
     if (txs instanceof Buffer) {
@@ -144,7 +141,6 @@ export class ArcClient {
       if (!Array.isArray(txs)) {
         throw new Error("txs must be an array of hex strings or a Buffer");
       }
-      contentType = "application/json";
       
       type jsonTx = {
         rawTx: string
