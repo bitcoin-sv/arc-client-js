@@ -141,14 +141,23 @@ export class ArcClient {
       if (!Array.isArray(txs)) {
         throw new Error("txs must be an array of hex strings or a Buffer");
       }
+      
+      type jsonTx = {
+        rawTx: string
+      }
+      type jsonTxs = jsonTx[]
 
+      let jTxs : jsonTxs = [];
+      
       txs.forEach((tx) => {
-        if (!/^[0-9A-Fa-f]+$/.test(tx["rawTx"])) {
-          throw new Error("tx must be a valid hex string");
+        if (typeof tx !== "string" || !/^[0-9A-Fa-f]+$/.test(tx)) {
+          throw new Error("tx must be a valid hex string")
         }
-      });
 
-      body = JSON.stringify(txs);
+        jTxs.push({rawTx: tx});
+      })
+
+      body = JSON.stringify(jTxs)
     }
 
     return await this.doHTTPRequest(`${this.client.serverUrl}/${this.version}/txs`, {

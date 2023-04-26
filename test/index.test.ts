@@ -217,7 +217,7 @@ describe('PostTransactions', () => {
     const call = resp.mock.calls[0];
     expect(call[0]).toBe(`${testUrl}v1${HttpUrl}`);
     expect(call[1]?.method).toBe("POST");
-    expect(call[1]?.body).toBe(JSON.stringify([tx1Raw, tx2Raw]));
+    expect(call[1]?.body).toBe(JSON.stringify([{"rawTx": tx1Raw}, {"rawTx": tx2Raw}]));
     expect(call[1]?.headers).toEqual({
       "Accept": "application/json",
       "Content-Type": "application/json",
