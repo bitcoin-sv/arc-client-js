@@ -1,15 +1,15 @@
 {
-  "name": "js-arc-client",
+  "name": "@bitcoin-a/arc-client",
   "version": "1.0.3",
   "description": "TypeScript library for Bitcoin ARC",
   "author": "Siggi Oskarsson <github@icellan.net>",
-  "homepage": "https://github.com/TAAL-GmbH/js-arc-client",
+  "homepage": "https://github.com/bitcoin-sv/arc-client-js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TAAL-GmbH/js-arc-client"
+    "url": "https://github.com/bitcoin-sv/arc-client-js"
   },
   "bugs": {
-    "url": "https://github.com/TAAL-GmbH/js-arc-client/issues"
+    "url": "https://github.com/bitcoin-sv/arc-client-js/issues"
   },
   "license": "BSV",
   "keywords": [
@@ -32,7 +32,7 @@
     "predocs": "rimraf ./docs",
     "docs": "typedoc src --out docs",
     "clean": "rimraf ./build ./dist ./docs",
-    "pub": "yarn build && yarn publish",
+    "pub": "yarn build && yarn publish --access public",
     "test": "jest"
   },
   "dependencies": {
