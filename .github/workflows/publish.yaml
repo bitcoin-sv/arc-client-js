@@ -1,0 +1,19 @@
+name: Publish
+
+on: 
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test scenario tags' 
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Tags: ${{ github.event.inputs.tags }}" 
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '19'
+      - run: yarn install
+      # - run: npm publish
