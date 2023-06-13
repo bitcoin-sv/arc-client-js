@@ -3,13 +3,13 @@ This is a TypeScript library for the Bitcoin ARC project.
 
 ## Installation
 ```bash
-npm install js-arc-client
+npm install @bitcoin-a/arc-client
 ```
 
 ## Usage
 
 ```javascript
-import { ArcClient } from 'js-arc-client';
+import { ArcClient } from '@bitcoin-a/arc-client';
 
 const arcClient = new ArcClient('https://api.taal.com/arc', {
   authorization: '<api-key>'
@@ -22,7 +22,7 @@ const result = await arcClient.getTransactionStatus(txid);
 or as commonjs module:
 
 ```javascript
-const { ArcClient } = require('js-arc-client').ArcClient;
+const { ArcClient } = require('@bitcoin-a/arc-client').ArcClient;
 
 const arcClient = new ArcClient('https://api.taal.com/arc', {
   authorization: '<api-key>'
