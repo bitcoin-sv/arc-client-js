@@ -186,7 +186,7 @@ export class ArcClient {
 
     if (response.status >= 400) {
       this.lastError = await response.json() as TransactionError;
-      throw new Error(response.statusText);
+      return { error: this.lastError }
     }
 
     return response.json();
