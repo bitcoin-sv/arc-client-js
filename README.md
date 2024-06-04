@@ -1,3 +1,7 @@
+# DEPRECATED ⛔️
+
+This is no longer supported, please consider using [ts-sdk](https://github.com/bitcoin-sv/ts-sdk) instead.
+
 # Bitcoin ARC TypeScript Library
 This is a TypeScript library for the Bitcoin ARC project.
 
