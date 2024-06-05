@@ -26,7 +26,7 @@ const result = await arcClient.getTransactionStatus(txid);
 or as commonjs module:
 
 ```javascript
-const { ArcClient } = require('js-arc-client').ArcClient;
+const { ArcClient } = require('js-arc-client');
 
 const arcClient = new ArcClient('https://api.taal.com/arc', {
   authorization: '<api-key>'
