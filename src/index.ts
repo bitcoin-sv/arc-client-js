@@ -122,7 +122,7 @@ export class ArcClient {
    * @param txs string[] | Buffer Transactions to post
    * @returns {Promise<TransactionStatus | TransactionError>}
    */
-  async postTransactions(txs: string[] | Buffer): Promise<TransactionStatus> {
+  async postTransactions(txs: string[] | Buffer): Promise<TransactionStatus[]> {
     if (!txs) {
       throw new Error("txs cannot be empty");
     }
